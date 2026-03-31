@@ -32,6 +32,30 @@ namespace Ishurim.Services
             return institutes;
         }
 
+        public Institute GetInstituteById(int id)
+        {
+            using (SqlConnection sqlCon = new(connectionString))
+            {
+                sqlCon.Open();
+                SqlCommand command = new($"SELECT * FROM Institutes WHERE InstituteId = @id", sqlCon);
+                command.Parameters.AddWithValue("@id", id);
+
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Institute institute = new()
+                    {
+                        InstituteId = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        HospitalId = reader.GetInt32(2)
+                    };
+                    return institute;
+                }
+            }
+            return null;
+        }
+
+
         public int CreateNewInstitute(Institute institute)
         {
             using SqlConnection sqlCon = new(connectionString);

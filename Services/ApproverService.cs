@@ -32,12 +32,35 @@ namespace Ishurim.Services
             return approvers;
         }
 
+        public Approver GetApproverById(int id)
+        {
+            using (SqlConnection sqlCon = new(connectionString))
+            {
+                sqlCon.Open();
+                SqlCommand command = new($"SELECT * FROM Approvers WHERE ApproverId = @id", sqlCon);
+                command.Parameters.AddWithValue("@id", id);
+
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Approver approver = new()
+                    {
+                        ApproverId = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        FullName = reader.GetString(2)
+                    };
+                    return approver;
+                }
+            }
+            return null;
+        }
+
         public int CreateNewApprover(Approver approver)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO Approvers (Name, FullName) VALUES (@name, @fullname);" +
+            SqlCommand command = new($"INSERT INTO Approvers (Name, FullName, Allowed) VALUES (@name, @fullname, 1);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", approver.Name);
             command.Parameters.AddWithValue("@fullname", approver.FullName);
@@ -52,10 +75,11 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Approvers SET Name = @name, FullName = @fullname WHERE ApproverId = @approverId", sqlCon);
+            SqlCommand command = new($"UPDATE Approvers SET Name = @name, FullName = @fullname, Allowed = @allowed WHERE ApproverId = @approverId", sqlCon);
             command.Parameters.AddWithValue("@name", approver.Name);
             command.Parameters.AddWithValue("@fullname", approver.FullName);
             command.Parameters.AddWithValue("@approverId", approver.ApproverId);
+            command.Parameters.AddWithValue("@allowed", approver.Allowed);
 
             command.ExecuteNonQuery();
         }

@@ -62,5 +62,22 @@ namespace Ishurim.Controllers
 
             return Ok();
         }
+
+        [HttpGet("pdf/{id}")]
+        public IActionResult GetPdf(int id)
+        {
+            AuthService auth = new();
+            var token = auth.GetToken(Request);
+            if (token == null) return BadRequest("Authorization header is missing or incorrect.");
+            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+
+            ApprovalService service = new();
+            Approval approval = service.GetAllApprovals().Find(x => x.ApprovalId == id);
+
+            PdfService pdfService = new();
+            var pdfBytes = pdfService.GenerateApproval(approval);
+
+            return File(pdfBytes, "application/pdf", "approval.pdf");
+        }
     }
 }
