@@ -30,8 +30,8 @@ namespace Ishurim.Services
                     {
                         UserId = reader.GetInt32(0),
                         Username = reader.GetString(1),
-                        FullName = reader.GetString(2),
                         PasswordHash = string.Empty,
+                        FullName = reader.GetString(3),
                         Role = reader.GetByte(4),
                         IsActive = reader.GetBoolean(5)
                     };
@@ -39,6 +39,33 @@ namespace Ishurim.Services
                 }
             }
             return users;
+        }
+
+        public User GetUserById(int id)
+        {
+            using (SqlConnection sqlCon = new(connectionString))
+            {
+                sqlCon.Open();
+
+                SqlCommand command = new($"SELECT * FROM Users WHERE UserId = @id", sqlCon);
+                command.Parameters.AddWithValue("@id", id);
+
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    User user = new()
+                    {
+                        UserId = reader.GetInt32(0),
+                        Username = reader.GetString(1),
+                        PasswordHash = string.Empty,
+                        FullName = reader.GetString(3),
+                        Role = reader.GetByte(4),
+                        IsActive = reader.GetBoolean(5)
+                    };
+                    return user;
+                }
+            }
+            return null;
         }
 
         public int CreateAccount(User user)

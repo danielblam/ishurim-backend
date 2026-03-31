@@ -31,6 +31,28 @@ namespace Ishurim.Services
             return hospitals;
         }
 
+        public Hospital GetHospitalById(int id)
+        {
+            using (SqlConnection sqlCon = new(connectionString))
+            {
+                sqlCon.Open();
+                SqlCommand command = new($"SELECT * FROM Hospitals WHERE HospitalId = @id", sqlCon);
+                command.Parameters.AddWithValue("@id", id);
+
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Hospital hospital = new()
+                    {
+                        HospitalId = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    };
+                    return hospital;
+                }
+            }
+            return null;
+        }
+
         public int CreateNewHospital(Hospital hospital)
         {
             using SqlConnection sqlCon = new(connectionString);

@@ -5,65 +5,87 @@ using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
 {
-    public class VehicleService
+    public class TestService
     {
         private static readonly string connectionString = new DbService().connectionString;
 
-        public List<Vehicle> GetAllVehicles()
+        public List<Test> GetAllTests()
         {
-            List<Vehicle> vehicles = [];
+            List<Test> tests = [];
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Vehicles", sqlCon);
+                SqlCommand command = new($"SELECT * FROM Tests", sqlCon);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    Vehicle vehicle = new()
+                    Test test = new()
                     {
-                        VehicleId = reader.GetInt32(0),
+                        TestId = reader.GetInt32(0),
                         Name = reader.GetString(1)
                     };
-                    vehicles.Add(vehicle);
+                    tests.Add(test);
                 }
             }
-            return vehicles;
+            return tests;
         }
 
-        public int CreateNewVehicle(Vehicle vehicle)
+        public Test GetTestById(int id)
+        {
+            using (SqlConnection sqlCon = new(connectionString))
+            {
+                sqlCon.Open();
+                SqlCommand command = new($"SELECT * FROM Tests WHERE TestId = @id", sqlCon);
+                command.Parameters.AddWithValue("@id", id);
+
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Test test = new()
+                    {
+                        TestId = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    };
+                    return test;
+                }
+            }
+            return null;
+        }
+
+        public int CreateNewTest(Test test)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO Vehicles (Name) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO Tests (Name) VALUES (@name);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
-            command.Parameters.AddWithValue("@name", vehicle.Name);
+            command.Parameters.AddWithValue("@name", test.Name);
 
-            int newVehicleId = int.Parse(command.ExecuteScalar().ToString());
+            int newTestId = int.Parse(command.ExecuteScalar().ToString());
 
-            return newVehicleId;
+            return newTestId;
         }
 
-        public void EditVehicle(Vehicle vehicle)
+        public void EditTest(Test test)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Vehicles SET Name = @name WHERE VehicleId = @vehicleId", sqlCon);
-            command.Parameters.AddWithValue("@name", vehicle.Name);
-            command.Parameters.AddWithValue("@vehicleId", vehicle.VehicleId);
+            SqlCommand command = new($"UPDATE Tests SET Name = @name WHERE TestId = @testId", sqlCon);
+            command.Parameters.AddWithValue("@name", test.Name);
+            command.Parameters.AddWithValue("@testId", test.TestId);
 
             command.ExecuteNonQuery();
         }
 
-        public void DeleteVehicle(int vehicleId)
+        public void DeleteTest(int testId)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new("DELETE FROM Vehicles WHERE VehicleId = @vehicleId", sqlCon);
-            command.Parameters.AddWithValue("@vehicleId", vehicleId);
+            SqlCommand command = new("DELETE FROM Tests WHERE TestId = @testId", sqlCon);
+            command.Parameters.AddWithValue("@testId", testId);
 
             command.ExecuteNonQuery();
         }
