@@ -1,6 +1,7 @@
 ﻿using Ishurim.Models;
 using Ishurim.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Ishurim.Controllers
 {

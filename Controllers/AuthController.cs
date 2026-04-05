@@ -39,6 +39,7 @@ namespace Ishurim.Controllers
             LoginResponse response = new()
             {
                 Token = token,
+                UserId = userId
             };
 
             //Response.Cookies.Append("Session", token, new CookieOptions
