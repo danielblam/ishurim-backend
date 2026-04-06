@@ -76,7 +76,7 @@ namespace Ishurim.Services
 
             SqlCommand command = new($"UPDATE Approvals SET " +
                 $"HospitalizationId = @hospitalizationId, ApprovalDate = @approvalDate, TestId = @testId, FirstName = @firstName, LastName = @lastName, " +
-                $"IdNumber = @idNumber, Department = @department, VehicleId = @vehicleId, ApproverId = @approverId, ClerkId = @clerkId, InstituteId = @instituteId, Note = @note" +
+                $"IdNumber = @idNumber, Department = @department, VehicleId = @vehicleId, ApproverId = @approverId, ClerkId = @clerkId, InstituteId = @instituteId, Note = @note " +
                 $"WHERE ApprovalId = @approvalId", sqlCon);
             command.Parameters.AddWithValue("@hospitalizationId", approval.HospitalizationId);
             command.Parameters.AddWithValue("@approvalDate", approval.ApprovalDate);
