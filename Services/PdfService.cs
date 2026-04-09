@@ -23,7 +23,7 @@ namespace Ishurim.Services
             using var fontStream2 = File.OpenRead("Resources/Fonts/DavidLibre-Bold.ttf");
             FontManager.RegisterFontWithCustomName("DavidBold", fontStream2);
 
-            DateOnly date = new();
+            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
             void AddLine(TextDescriptor builder, string content, string font, int fontSize, int extraSpace = 0, bool italic = false, bool truncate = true)
             {
                 string text = content.Length > 24 && truncate ? content.Substring(0, 24) + "..." : content;
