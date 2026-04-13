@@ -42,6 +42,7 @@ namespace Ishurim.Services
             InstituteService instituteService = new();
             VehicleService vehicleService = new();
             AccountService accountService = new();
+            DepartmentService departmentService = new();
 
             string approverFullName = approverService.GetApproverById(approval.ApproverId).FullName;
             Institute institute = instituteService.GetInstituteById(approval.InstituteId);
@@ -49,7 +50,8 @@ namespace Ishurim.Services
             string hospitalName = hospitalService.GetHospitalById(institute.HospitalId).Name;
             string testName = testService.GetTestById(approval.TestId).Name;
             string vehicleName = vehicleService.GetVehicleById(approval.VehicleId).Name;
-            string clerkName = accountService.GetUserById(approval.ClerkId).FullName;
+            string clerkName = approval.Clerk;
+            string departmentName = departmentService.GetDepartmentById(approval.DepartmentId).Name;
 
             var doc = Document
                 .Create(document =>
@@ -194,12 +196,12 @@ namespace Ishurim.Services
 
                                             AddLine(text, approval.ApprovalId.ToString(), font, fs, 0, true);
                                             AddLine(text, approval.HospitalizationId, font, fs, 0, true);
-                                            AddLine(text, approval.ApprovalDate.ToString("dd/MM/yyyy"), font, fs, 6, true);
+                                            AddLine(text, approval.Date.ToString("dd/MM/yyyy"), font, fs, 6, true);
                                             AddLine(text, testName, font, fs, 10, true);
                                             AddLine(text, approval.FirstName, font, fs, 0, true);
                                             AddLine(text, approval.LastName, font, fs, 0, true);
-                                            AddLine(text, approval.IdNumber, font, fs, 0, true);
-                                            AddLine(text, approval.Department, font, fs, 0, true);
+                                            AddLine(text, approval.IdNumber.ToString(), font, fs, 0, true);
+                                            AddLine(text, departmentName, font, fs, 0, true);
                                             AddLine(text, vehicleName, font, fs, 24, true);
                                             AddLine(text, approverFullName, font, fs, 0, true);
                                             AddLine(text, clerkName, font, fs, 0, true);

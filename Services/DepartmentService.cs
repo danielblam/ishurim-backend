@@ -5,14 +5,14 @@ using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
 {
-    public class DepartmentService
+    public class HospitalService
     {
         private static readonly string connectionString = new DbService().connectionString;
-        private static readonly string tableName = "Mahlakot";
+        private static readonly string tableName = "Hospitals";
 
-        public List<Department> GetAllDepartments()
+        public List<Hospital> GetAllHospitals()
         {
-            List<Department> departments = [];
+            List<Hospital> hospitals = [];
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
@@ -21,18 +21,18 @@ namespace Ishurim.Services
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    Department department = new()
+                    Hospital hospital = new()
                     {
-                        DepartmentId = reader.GetInt32(0),
+                        HospitalId = reader.GetInt32(0),
                         Name = reader.GetString(1)
                     };
-                    departments.Add(department);
+                    hospitals.Add(hospital);
                 }
             }
-            return departments;
+            return hospitals;
         }
 
-        public Department GetDepartmentById(int id)
+        public Hospital GetHospitalById(int id)
         {
             using (SqlConnection sqlCon = new(connectionString))
             {
@@ -43,50 +43,50 @@ namespace Ishurim.Services
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    Department department = new()
+                    Hospital hospital = new()
                     {
-                        DepartmentId = reader.GetInt32(0),
+                        HospitalId = reader.GetInt32(0),
                         Name = reader.GetString(1)
                     };
-                    return department;
+                    return hospital;
                 }
             }
             return null;
         }
 
-        public int CreateNewDepartment(Department department)
+        public int CreateNewHospital(Hospital hospital)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (Mahlaka) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Hospital) VALUES (@name);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
-            command.Parameters.AddWithValue("@name", department.Name);
+            command.Parameters.AddWithValue("@name", hospital.Name);
 
-            int newDepartmentId = int.Parse(command.ExecuteScalar().ToString());
+            int newHospitalId = int.Parse(command.ExecuteScalar().ToString());
 
-            return newDepartmentId;
+            return newHospitalId;
         }
 
-        public void EditDepartment(Department department)
+        public void EditHospital(Hospital hospital)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE {tableName} SET Mahlaka = @name WHERE Mone = @departmentId", sqlCon);
-            command.Parameters.AddWithValue("@name", department.Name);
-            command.Parameters.AddWithValue("@departmentId", department.DepartmentId);
+            SqlCommand command = new($"UPDATE {tableName} SET Hospital = @name WHERE Mone = @hospitalId", sqlCon);
+            command.Parameters.AddWithValue("@name", hospital.Name);
+            command.Parameters.AddWithValue("@hospitalId", hospital.HospitalId);
 
             command.ExecuteNonQuery();
         }
 
-        public void DeleteDepartment(int departmentId)
+        public void DeleteHospital(int hospitalId)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @departmentId" , sqlCon);
-            command.Parameters.AddWithValue("@departmentId", departmentId);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @hospitalId" , sqlCon);
+            command.Parameters.AddWithValue("@hospitalId", hospitalId);
 
             command.ExecuteNonQuery();
         }
