@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Ishurim.Models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
@@ -8,6 +9,7 @@ namespace Ishurim.Services
     public class ApprovalService
     {
         private static readonly string connectionString = new DbService().connectionString;
+        private static readonly string tableName = "Ishurim";
 
         public List<Approval> GetAllApprovals()
         {
@@ -15,7 +17,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Approvals", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName}", sqlCon);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -23,18 +25,19 @@ namespace Ishurim.Services
                     Approval approval = new()
                     {
                         ApprovalId = reader.GetInt32(0),
-                        HospitalizationId = reader.GetString(1),
-                        ApprovalDate = reader.GetFieldValue<DateOnly>(2),
-                        TestId = reader.GetInt32(3),
-                        FirstName = reader.GetString(4),
-                        LastName = reader.GetString(5),
-                        IdNumber = reader.GetString(6),
-                        Department = reader.GetString(7),
-                        VehicleId = reader.GetInt32(8),
-                        ApproverId = reader.GetInt32(9),
-                        ClerkId = reader.GetInt32(10),
-                        InstituteId = reader.GetInt32(11),
-                        Note = reader.GetString(12)
+                        HospitalizationId = reader.GetString("MisparIshpuz"),
+                        Date = DateOnly.FromDateTime(reader.GetFieldValue<DateTime>("Taarih")),
+                        TestId = reader.GetInt32("SugBdika"),
+                        TestCode = reader.GetString("KodBdika"),
+                        FirstName = reader.GetString("Shem"),
+                        LastName = reader.GetString("Mishpaha"),
+                        IdNumber = reader.GetInt32("ID"),
+                        DepartmentId = reader.GetInt32("Mahlaka"),
+                        VehicleId = reader.GetInt32("CliTahbura"),
+                        ApproverId = reader.GetInt32("Measher"),
+                        Clerk = reader.GetString("Pakid"),
+                        InstituteId = reader.GetInt32("Mahon"),
+                        Note = reader.GetString("Heara")
                     };
                     approvals.Add(approval);
                 }
@@ -48,19 +51,19 @@ namespace Ishurim.Services
             sqlCon.Open();
 
             SqlCommand command = new(
-                $"INSERT INTO Approvals (HospitalizationId, ApprovalDate, TestId, FirstName, LastName, IdNumber, Department, VehicleId, ApproverId, ClerkId, InstituteId, Note) " +
-                $"VALUES (@hospitalizationId, @approvalDate, @testId, @firstName, @lastName, @idNumber, @department, @vehicleId, @approverId, @clerkId, @instituteId, @note);" +
+                $"INSERT INTO {tableName} (MisparIshpuz, Taarih, SugBdika, Shem, Mishpaha, ID, Mahlaka, CliTahbura, Measher, Pakid, Mahon, Heara) " +
+                $"VALUES (@hospitalizationId, @approvalDate, @testId, @firstName, @lastName, @idNumber, @department, @vehicleId, @approverId, @clerk, @instituteId, @note);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@hospitalizationId", approval.HospitalizationId);
-            command.Parameters.AddWithValue("@approvalDate", approval.ApprovalDate);
+            command.Parameters.AddWithValue("@approvalDate", approval.Date.ToDateTime(TimeOnly.MinValue));
             command.Parameters.AddWithValue("@testId", approval.TestId);
             command.Parameters.AddWithValue("@firstName", approval.FirstName);
             command.Parameters.AddWithValue("@lastName", approval.LastName);
             command.Parameters.AddWithValue("@idNumber", approval.IdNumber);
-            command.Parameters.AddWithValue("@department", approval.Department);
+            command.Parameters.AddWithValue("@department", approval.DepartmentId);
             command.Parameters.AddWithValue("@vehicleId", approval.VehicleId);
             command.Parameters.AddWithValue("@approverId", approval.ApproverId);
-            command.Parameters.AddWithValue("@clerkId", approval.ClerkId);
+            command.Parameters.AddWithValue("@clerk", approval.Clerk);
             command.Parameters.AddWithValue("@instituteId", approval.InstituteId);
             command.Parameters.AddWithValue("@note", approval.Note);
 
@@ -74,20 +77,20 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Approvals SET " +
-                $"HospitalizationId = @hospitalizationId, ApprovalDate = @approvalDate, TestId = @testId, FirstName = @firstName, LastName = @lastName, " +
-                $"IdNumber = @idNumber, Department = @department, VehicleId = @vehicleId, ApproverId = @approverId, ClerkId = @clerkId, InstituteId = @instituteId, Note = @note " +
-                $"WHERE ApprovalId = @approvalId", sqlCon);
+            SqlCommand command = new($"UPDATE {tableName} SET " +
+                $"MisparIshpuz = @hospitalizationId, Taarih = @approvalDate, SugBdika = @testId, Shem = @firstName, Mishpaha = @lastName, " +
+                $"ID = @idNumber, Mahlaka = @department, CliTahbura = @vehicleId, Measher = @approverId, Pakid = @clerk, Mahon = @instituteId, Heara = @note " +
+                $"WHERE MisparShover = @approvalId", sqlCon);
             command.Parameters.AddWithValue("@hospitalizationId", approval.HospitalizationId);
-            command.Parameters.AddWithValue("@approvalDate", approval.ApprovalDate);
+            command.Parameters.AddWithValue("@approvalDate", approval.Date.ToDateTime(TimeOnly.MinValue));
             command.Parameters.AddWithValue("@testId", approval.TestId);
             command.Parameters.AddWithValue("@firstName", approval.FirstName);
             command.Parameters.AddWithValue("@lastName", approval.LastName);
             command.Parameters.AddWithValue("@idNumber", approval.IdNumber);
-            command.Parameters.AddWithValue("@department", approval.Department);
+            command.Parameters.AddWithValue("@department", approval.DepartmentId);
             command.Parameters.AddWithValue("@vehicleId", approval.VehicleId);
             command.Parameters.AddWithValue("@approverId", approval.ApproverId);
-            command.Parameters.AddWithValue("@clerkId", approval.ClerkId);
+            command.Parameters.AddWithValue("@clerk", approval.Clerk);
             command.Parameters.AddWithValue("@instituteId", approval.InstituteId);
             command.Parameters.AddWithValue("@note", approval.Note);
 
@@ -101,7 +104,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new("DELETE FROM Approvals WHERE ApprovalId = @ApprovalId" , sqlCon);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE MisparShover = @ApprovalId", sqlCon);
             command.Parameters.AddWithValue("@ApprovalId", approvalId);
 
             command.ExecuteNonQuery();

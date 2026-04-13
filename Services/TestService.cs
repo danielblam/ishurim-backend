@@ -8,6 +8,7 @@ namespace Ishurim.Services
     public class TestService
     {
         private static readonly string connectionString = new DbService().connectionString;
+        private static readonly string tableName = "SugeyBdikot";
 
         public List<Test> GetAllTests()
         {
@@ -15,7 +16,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Tests", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName}", sqlCon);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -36,7 +37,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Tests WHERE TestId = @id", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName} WHERE Mone = @id", sqlCon);
                 command.Parameters.AddWithValue("@id", id);
 
                 using SqlDataReader reader = command.ExecuteReader();
@@ -58,7 +59,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO Tests (Name) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (SugBdika) VALUES (@name);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", test.Name);
 
@@ -72,7 +73,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Tests SET Name = @name WHERE TestId = @testId", sqlCon);
+            SqlCommand command = new($"UPDATE {tableName} SET SugBdika = @name WHERE Mone = @testId", sqlCon);
             command.Parameters.AddWithValue("@name", test.Name);
             command.Parameters.AddWithValue("@testId", test.TestId);
 
@@ -84,7 +85,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new("DELETE FROM Tests WHERE TestId = @testId", sqlCon);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @testId", sqlCon);
             command.Parameters.AddWithValue("@testId", testId);
 
             command.ExecuteNonQuery();

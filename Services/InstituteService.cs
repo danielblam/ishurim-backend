@@ -8,6 +8,7 @@ namespace Ishurim.Services
     public class InstituteService
     {
         private static readonly string connectionString = new DbService().connectionString;
+        private static readonly string tableName = "Mehonim";
 
         public List<Institute> GetAllInstitutes()
         {
@@ -15,7 +16,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Institutes", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName}", sqlCon);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -37,7 +38,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Institutes WHERE InstituteId = @id", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName} WHERE Mone = @id", sqlCon);
                 command.Parameters.AddWithValue("@id", id);
 
                 using SqlDataReader reader = command.ExecuteReader();
@@ -61,7 +62,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO Institutes (Name, HospitalId) VALUES (@name, @hospitalId);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Mahon, Hospital) VALUES (@name, @hospitalId);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", institute.Name);
             command.Parameters.AddWithValue("@hospitalId", institute.HospitalId);
@@ -76,7 +77,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Institutes SET Name = @name, HospitalId = @hospitalId WHERE InstituteId = @instituteId", sqlCon);
+            SqlCommand command = new($"UPDATE {tableName} SET Mahon = @name, Hospital = @hospitalId WHERE Mone = @instituteId", sqlCon);
             command.Parameters.AddWithValue("@name", institute.Name);
             command.Parameters.AddWithValue("@hospitalId", institute.HospitalId);
             command.Parameters.AddWithValue("@instituteId", institute.InstituteId);
@@ -89,7 +90,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new("DELETE FROM Institutes WHERE InstituteId = @InstituteId" , sqlCon);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @InstituteId" , sqlCon);
             command.Parameters.AddWithValue("@InstituteId", instituteId);
 
             command.ExecuteNonQuery();

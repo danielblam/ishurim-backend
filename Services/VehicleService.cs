@@ -8,6 +8,7 @@ namespace Ishurim.Services
     public class VehicleService
     {
         private static readonly string connectionString = new DbService().connectionString;
+        private static readonly string tableName = "CleyTahbura";
 
         public List<Vehicle> GetAllVehicles()
         {
@@ -15,7 +16,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Vehicles", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName}", sqlCon);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -36,7 +37,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Vehicles WHERE VehicleId = @id", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName} WHERE Mone = @id", sqlCon);
                 command.Parameters.AddWithValue("@id", id);
 
                 using SqlDataReader reader = command.ExecuteReader();
@@ -58,7 +59,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO Vehicles (Name) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (CliTahbura) VALUES (@name);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", vehicle.Name);
 
@@ -72,7 +73,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Vehicles SET Name = @name WHERE VehicleId = @vehicleId", sqlCon);
+            SqlCommand command = new($"UPDATE {tableName} SET CliTahbura = @name WHERE Mone = @vehicleId", sqlCon);
             command.Parameters.AddWithValue("@name", vehicle.Name);
             command.Parameters.AddWithValue("@vehicleId", vehicle.VehicleId);
 
@@ -84,7 +85,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new("DELETE FROM Vehicles WHERE VehicleId = @vehicleId", sqlCon);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @vehicleId", sqlCon);
             command.Parameters.AddWithValue("@vehicleId", vehicleId);
 
             command.ExecuteNonQuery();

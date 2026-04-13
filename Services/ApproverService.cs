@@ -8,6 +8,7 @@ namespace Ishurim.Services
     public class ApproverService
     {
         private static readonly string connectionString = new DbService().connectionString;
+        private static readonly string tableName = "Meashrim";
 
         public List<Approver> GetAllApprovers()
         {
@@ -15,7 +16,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Approvers", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName}", sqlCon);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -37,7 +38,7 @@ namespace Ishurim.Services
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
-                SqlCommand command = new($"SELECT * FROM Approvers WHERE ApproverId = @id", sqlCon);
+                SqlCommand command = new($"SELECT * FROM {tableName} WHERE Mone = @id", sqlCon);
                 command.Parameters.AddWithValue("@id", id);
 
                 using SqlDataReader reader = command.ExecuteReader();
@@ -60,7 +61,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO Approvers (Name, FullName, Allowed) VALUES (@name, @fullname, 1);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Measher, TeurMeasher, Musmah) VALUES (@name, @fullname, 0);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", approver.Name);
             command.Parameters.AddWithValue("@fullname", approver.FullName);
@@ -75,7 +76,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"UPDATE Approvers SET Name = @name, FullName = @fullname, Allowed = @allowed WHERE ApproverId = @approverId", sqlCon);
+            SqlCommand command = new($"UPDATE {tableName} SET Measher = @name, TeurMeasher = @fullname, Musmah = @allowed WHERE Mone = @approverId", sqlCon);
             command.Parameters.AddWithValue("@name", approver.Name);
             command.Parameters.AddWithValue("@fullname", approver.FullName);
             command.Parameters.AddWithValue("@approverId", approver.ApproverId);
@@ -89,7 +90,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new("DELETE FROM Approvers WHERE ApproverId = @ApproverId" , sqlCon);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @ApproverId" , sqlCon);
             command.Parameters.AddWithValue("@ApproverId", approverId);
 
             command.ExecuteNonQuery();
