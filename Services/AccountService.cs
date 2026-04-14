@@ -28,12 +28,9 @@ namespace Ishurim.Services
                 {
                     User user = new()
                     {
-                        UserId = reader.GetInt32(0),
-                        Username = reader.GetString(1),
-                        PasswordHash = string.Empty,
-                        FullName = reader.GetString(3),
-                        Role = reader.GetByte(4),
-                        IsActive = reader.GetBoolean(5)
+                        Username = reader.GetString(0),
+                        Password = string.Empty,
+                        Role = reader.GetInt32(2)
                     };
                     users.Add(user);
                 }
@@ -41,26 +38,23 @@ namespace Ishurim.Services
             return users;
         }
 
-        public User GetUserById(int id)
+        public User GetUserByName(string username)
         {
             using (SqlConnection sqlCon = new(connectionString))
             {
                 sqlCon.Open();
 
-                SqlCommand command = new($"SELECT * FROM Users WHERE UserId = @id", sqlCon);
-                command.Parameters.AddWithValue("@id", id);
+                SqlCommand command = new($"SELECT * FROM Users WHERE [User] = @user", sqlCon);
+                command.Parameters.AddWithValue("@user", username);
 
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     User user = new()
                     {
-                        UserId = reader.GetInt32(0),
-                        Username = reader.GetString(1),
-                        PasswordHash = string.Empty,
-                        FullName = reader.GetString(3),
-                        Role = reader.GetByte(4),
-                        IsActive = reader.GetBoolean(5)
+                        Username = reader.GetString(0),
+                        Password = string.Empty,
+                        Role = reader.GetInt32(2)
                     };
                     return user;
                 }
@@ -74,8 +68,8 @@ namespace Ishurim.Services
             sqlCon.Open();
 
 
-            SqlCommand check = new($"SELECT * FROM Users WHERE Username = @username", sqlCon);
-            check.Parameters.AddWithValue("@username", user.Username);
+            SqlCommand check = new($"SELECT * FROM Users WHERE [User] = @user", sqlCon);
+            check.Parameters.AddWithValue("@user", user.Username);
 
             using (SqlDataReader reader = check.ExecuteReader())
             {
@@ -83,28 +77,27 @@ namespace Ishurim.Services
             }
 
             AuthService auth = new();
-            string hashedpassword = auth.HashPassword(user.PasswordHash);
+            string hashedpassword = auth.HashPassword(user.Password);
+            //string hashedpassword = user.Password; // this is (hopefully) temporary
 
             SqlCommand command = new(
-                $"INSERT INTO Users (Username, PasswordHash, FullName, Role, IsActive) VALUES (@username, @passwordHash, @fullName, @role, 1);" +
+                $"INSERT INTO Users ([User], Sisma, Harshaot) VALUES (@username, @passwordHash, 0);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@username", user.Username);
             command.Parameters.AddWithValue("@passwordHash", hashedpassword);
-            command.Parameters.AddWithValue("@fullName", user.FullName);
-            command.Parameters.AddWithValue("@role", user.Role);
 
             int newUserID = int.Parse(command.ExecuteScalar().ToString());
             return newUserID;
         }
 
-        public int DeleteAccount(int userId)
+        public int DeleteAccount(string username)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
             SqlCommand command = new(
-                $"DELETE FROM Users WHERE UserId = @userId", sqlCon);
-            command.Parameters.AddWithValue("@userId", userId);
+                $"DELETE FROM Users WHERE [User] = @user", sqlCon);
+            command.Parameters.AddWithValue("@user", username);
 
             command.ExecuteNonQuery();
             return 0;

@@ -34,12 +34,11 @@ namespace Ishurim.Controllers
             }
             var token = (new Utilities()).GenerateToken();
 
-            service.SaveToken(userId, token);
+            service.SaveToken(details.Username, token);
 
             LoginResponse response = new()
             {
-                Token = token,
-                UserId = userId
+                Token = token
             };
 
             //Response.Cookies.Append("Session", token, new CookieOptions
