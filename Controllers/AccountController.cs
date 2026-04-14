@@ -37,17 +37,17 @@ namespace Ishurim.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteUser(int id)
+        [HttpDelete("{username}")]
+        public IActionResult DeleteUser(string username)
         {
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
             if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
-            if (id == auth.GetUserIdFromToken(token)) return Forbid("Can't delete your own account.");
+            if (username == auth.GetUserFromToken(token)) return Forbid("Can't delete your own account.");
 
             AccountService service = new();
-            var result = service.DeleteAccount(id);
+            var result = service.DeleteAccount(username);
 
             return NoContent();
         }

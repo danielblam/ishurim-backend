@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Ishurim.Models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
@@ -25,7 +26,7 @@ namespace Ishurim.Services
                     {
                         InstituteId = reader.GetInt32(0),
                         Name = reader.GetString(1),
-                        HospitalId = reader.GetInt32(2)
+                        HospitalId = reader.IsDBNull(2) ? null : reader.GetInt32(2)
                     };
                     institutes.Add(institute);
                 }
@@ -48,7 +49,7 @@ namespace Ishurim.Services
                     {
                         InstituteId = reader.GetInt32(0),
                         Name = reader.GetString(1),
-                        HospitalId = reader.GetInt32(2)
+                        HospitalId = reader.IsDBNull(2) ? null : reader.GetInt32(2)
                     };
                     return institute;
                 }
@@ -65,7 +66,7 @@ namespace Ishurim.Services
             SqlCommand command = new($"INSERT INTO {tableName} (Mahon, Hospital) VALUES (@name, @hospitalId);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", institute.Name);
-            command.Parameters.AddWithValue("@hospitalId", institute.HospitalId);
+            command.Parameters.AddWithValue("@hospitalId", (object?)institute.HospitalId ?? DBNull.Value);
 
             int newInstituteId = int.Parse(command.ExecuteScalar().ToString());
 
@@ -79,7 +80,7 @@ namespace Ishurim.Services
 
             SqlCommand command = new($"UPDATE {tableName} SET Mahon = @name, Hospital = @hospitalId WHERE Mone = @instituteId", sqlCon);
             command.Parameters.AddWithValue("@name", institute.Name);
-            command.Parameters.AddWithValue("@hospitalId", institute.HospitalId);
+            command.Parameters.AddWithValue("@hospitalId", (object?)institute.HospitalId ?? DBNull.Value);
             command.Parameters.AddWithValue("@instituteId", institute.InstituteId);
 
             command.ExecuteNonQuery();

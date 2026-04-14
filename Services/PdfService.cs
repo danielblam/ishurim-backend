@@ -47,11 +47,11 @@ namespace Ishurim.Services
             string approverFullName = approverService.GetApproverById(approval.ApproverId).FullName;
             Institute institute = instituteService.GetInstituteById(approval.InstituteId);
             string instituteName = institute.Name;
-            string hospitalName = hospitalService.GetHospitalById(institute.HospitalId).Name;
+            string hospitalName = institute.HospitalId == null ? "-" : hospitalService.GetHospitalById((int)institute.HospitalId).Name;
             string testName = testService.GetTestById(approval.TestId).Name;
-            string vehicleName = vehicleService.GetVehicleById(approval.VehicleId).Name;
-            string clerkName = approval.Clerk;
-            string departmentName = departmentService.GetDepartmentById(approval.DepartmentId).Name;
+            string vehicleName = approval.VehicleId == null ? "-" : vehicleService.GetVehicleById((int)approval.VehicleId).Name;
+            string clerkName = approval.Clerk ?? "-";
+            string departmentName = approval.DepartmentId == null ? "-" : departmentService.GetDepartmentById((int)approval.DepartmentId).Name;
 
             var doc = Document
                 .Create(document =>
@@ -178,7 +178,7 @@ namespace Ishurim.Services
                                             int fs = 12;
 
                                             AddLine(text, "הערות", "DavidBold", fs);
-                                            AddLine(text, approval.Note, "David", fs, 0, true, false);
+                                            AddLine(text, approval.Note ?? "-", "David", fs, 0, true, false);
                                         });
                                     });
 
@@ -195,11 +195,11 @@ namespace Ishurim.Services
                                             string font = "David";
 
                                             AddLine(text, approval.ApprovalId.ToString(), font, fs, 0, true);
-                                            AddLine(text, approval.HospitalizationId, font, fs, 0, true);
-                                            AddLine(text, approval.Date.ToString("dd/MM/yyyy"), font, fs, 6, true);
+                                            AddLine(text, approval.HospitalizationId ?? "-", font, fs, 0, true);
+                                            AddLine(text, approval.Date?.ToString("dd/MM/yyyy") ?? "-", font, fs, 6, true);
                                             AddLine(text, testName, font, fs, 10, true);
-                                            AddLine(text, approval.FirstName, font, fs, 0, true);
-                                            AddLine(text, approval.LastName, font, fs, 0, true);
+                                            AddLine(text, approval.FirstName ?? "-", font, fs, 0, true);
+                                            AddLine(text, approval.LastName ?? "-", font, fs, 0, true);
                                             AddLine(text, approval.IdNumber.ToString(), font, fs, 0, true);
                                             AddLine(text, departmentName, font, fs, 0, true);
                                             AddLine(text, vehicleName, font, fs, 24, true);

@@ -25,19 +25,19 @@ namespace Ishurim.Services
                     Approval approval = new()
                     {
                         ApprovalId = reader.GetInt32(0),
-                        HospitalizationId = reader.GetString("MisparIshpuz"),
-                        Date = DateOnly.FromDateTime(reader.GetFieldValue<DateTime>("Taarih")),
+                        HospitalizationId = reader.IsDBNull("MisparIshpuz") ? null : reader.GetString("MisparIshpuz"),
+                        Date = reader.IsDBNull("MisparIshpuz") ? null : DateOnly.FromDateTime(reader.GetFieldValue<DateTime>("Taarih")),
                         TestId = reader.GetInt32("SugBdika"),
-                        TestCode = reader.GetString("KodBdika"),
-                        FirstName = reader.GetString("Shem"),
-                        LastName = reader.GetString("Mishpaha"),
+                        TestCode = reader.IsDBNull("KodBdika") ? null : reader.GetString("KodBdika"),
+                        FirstName = reader.IsDBNull("Shem") ? null : reader.GetString("Shem"),
+                        LastName = reader.IsDBNull("Mishpaha") ? null : reader.GetString("Mishpaha"),
                         IdNumber = reader.GetInt32("ID"),
-                        DepartmentId = reader.GetInt32("Mahlaka"),
-                        VehicleId = reader.GetInt32("CliTahbura"),
+                        DepartmentId = reader.IsDBNull("Mahlaka") ? null : reader.GetInt32("Mahlaka"),
+                        VehicleId = reader.IsDBNull("CliTahbura") ? null : reader.GetInt32("CliTahbura"),
                         ApproverId = reader.GetInt32("Measher"),
-                        Clerk = reader.GetString("Pakid"),
+                        Clerk = reader.IsDBNull("Pakid") ? null : reader.GetString("Pakid"),
                         InstituteId = reader.GetInt32("Mahon"),
-                        Note = reader.GetString("Heara")
+                        Note = reader.IsDBNull("Heara") ? null : reader.GetString("Heara")
                     };
                     approvals.Add(approval);
                 }
@@ -51,12 +51,13 @@ namespace Ishurim.Services
             sqlCon.Open();
 
             SqlCommand command = new(
-                $"INSERT INTO {tableName} (MisparIshpuz, Taarih, SugBdika, Shem, Mishpaha, ID, Mahlaka, CliTahbura, Measher, Pakid, Mahon, Heara) " +
-                $"VALUES (@hospitalizationId, @approvalDate, @testId, @firstName, @lastName, @idNumber, @department, @vehicleId, @approverId, @clerk, @instituteId, @note);" +
+                $"INSERT INTO {tableName} (MisparIshpuz, Taarih, SugBdika, KodBdika, Shem, Mishpaha, ID, Mahlaka, CliTahbura, Measher, Pakid, Mahon, Heara) " +
+                $"VALUES (@hospitalizationId, @approvalDate, @testId, @testCode, @firstName, @lastName, @idNumber, @department, @vehicleId, @approverId, @clerk, @instituteId, @note);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@hospitalizationId", approval.HospitalizationId);
-            command.Parameters.AddWithValue("@approvalDate", approval.Date.ToDateTime(TimeOnly.MinValue));
+            command.Parameters.AddWithValue("@approvalDate", approval.Date?.ToDateTime(TimeOnly.MinValue));
             command.Parameters.AddWithValue("@testId", approval.TestId);
+            command.Parameters.AddWithValue("@testCode", approval.TestCode);
             command.Parameters.AddWithValue("@firstName", approval.FirstName);
             command.Parameters.AddWithValue("@lastName", approval.LastName);
             command.Parameters.AddWithValue("@idNumber", approval.IdNumber);
@@ -78,12 +79,13 @@ namespace Ishurim.Services
             sqlCon.Open();
 
             SqlCommand command = new($"UPDATE {tableName} SET " +
-                $"MisparIshpuz = @hospitalizationId, Taarih = @approvalDate, SugBdika = @testId, Shem = @firstName, Mishpaha = @lastName, " +
+                $"MisparIshpuz = @hospitalizationId, Taarih = @approvalDate, SugBdika = @testId, KodBdika = @testCode, Shem = @firstName, Mishpaha = @lastName, " +
                 $"ID = @idNumber, Mahlaka = @department, CliTahbura = @vehicleId, Measher = @approverId, Pakid = @clerk, Mahon = @instituteId, Heara = @note " +
                 $"WHERE MisparShover = @approvalId", sqlCon);
             command.Parameters.AddWithValue("@hospitalizationId", approval.HospitalizationId);
-            command.Parameters.AddWithValue("@approvalDate", approval.Date.ToDateTime(TimeOnly.MinValue));
+            command.Parameters.AddWithValue("@approvalDate", approval.Date?.ToDateTime(TimeOnly.MinValue));
             command.Parameters.AddWithValue("@testId", approval.TestId);
+            command.Parameters.AddWithValue("@testCode", approval.TestCode);
             command.Parameters.AddWithValue("@firstName", approval.FirstName);
             command.Parameters.AddWithValue("@lastName", approval.LastName);
             command.Parameters.AddWithValue("@idNumber", approval.IdNumber);
