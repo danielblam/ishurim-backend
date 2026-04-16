@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Ishurim.Models;
 using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
@@ -25,7 +26,8 @@ namespace Ishurim.Services
                     {
                         ApproverId = reader.GetInt32(0),
                         Name = reader.GetString(1),
-                        FullName = reader.GetString(2)
+                        FullName = reader.GetString(2),
+                        Allowed = reader.GetBoolean(3)
                     };
                     approvers.Add(approver);
                 }
@@ -61,10 +63,11 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (Measher, TeurMeasher, Musmah) VALUES (@name, @fullname, 0);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Measher, TeurMeasher, Musmah) VALUES (@name, @fullname, @allowed);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", approver.Name);
             command.Parameters.AddWithValue("@fullname", approver.FullName);
+            command.Parameters.AddWithValue("@allowed", approver.Allowed);
 
             int newApproverId = int.Parse(command.ExecuteScalar().ToString());
 
