@@ -27,10 +27,11 @@ namespace Ishurim.Services
             {
                 string user = reader.GetString(0);
                 string password = reader.GetString(1);
-                if (HashPassword(details.Password) != password) return -1; // Incorrect password
-                return 0;
+                if (HashPassword(details.Password) != password) return -1000; // Incorrect password
+                int role = reader.GetInt32(2);
+                return role;
             }
-            return -2; // Username doesn't exist, so the while block is never entered
+            return -2000; // Username doesn't exist, so the while block is never entered
         }
 
         public bool Authorize(string token, Roles requiredRole)
