@@ -27,7 +27,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             InstituteService service = new();
             service.CreateNewInstitute(institute);
@@ -41,7 +41,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             InstituteService service = new();
             service.EditInstitute(institute);
@@ -55,7 +55,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             InstituteService service = new();
             service.DeleteInstitute(id);

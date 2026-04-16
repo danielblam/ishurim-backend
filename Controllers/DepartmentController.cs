@@ -28,7 +28,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             DepartmentService service = new();
             service.CreateNewDepartment(department);
@@ -42,7 +42,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             DepartmentService service = new();
             service.EditDepartment(department);
@@ -56,7 +56,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             DepartmentService service = new();
             service.DeleteDepartment(id);

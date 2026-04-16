@@ -28,7 +28,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             HospitalService service = new();
             service.CreateNewHospital(hospital);
@@ -42,7 +42,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             HospitalService service = new();
             service.EditHospital(hospital);
@@ -56,7 +56,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             HospitalService service = new();
             service.DeleteHospital(id);
