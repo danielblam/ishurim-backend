@@ -27,7 +27,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             TestService service = new();
             service.CreateNewTest(test);
@@ -41,7 +41,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             TestService service = new();
             service.EditTest(test);
@@ -55,7 +55,7 @@ namespace Ishurim.Controllers
             AuthService auth = new();
             var token = auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
             TestService service = new();
             service.DeleteTest(id);
