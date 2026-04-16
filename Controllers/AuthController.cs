@@ -26,11 +26,11 @@ namespace Ishurim.Controllers
         public IActionResult Login(LoginDetails details)
         {
             AuthService service = new();
-            var userId = service.LogIn(details);
-            switch (userId)
+            var result = service.LogIn(details);
+            switch (result)
             {
-                case -1: return Unauthorized("Incorrect password.");
-                case -2: return NotFound("No account with this username.");
+                case -1000: return Unauthorized("Incorrect password.");
+                case -2000: return NotFound("No account with this username.");
             }
             var token = (new Utilities()).GenerateToken();
 
@@ -38,7 +38,8 @@ namespace Ishurim.Controllers
 
             LoginResponse response = new()
             {
-                Token = token
+                Token = token,
+                Role = result
             };
 
             //Response.Cookies.Append("Session", token, new CookieOptions
