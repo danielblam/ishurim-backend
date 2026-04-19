@@ -8,29 +8,33 @@ namespace Ishurim.Controllers
     [ApiController]
     public class ApproverController : Controller
     {
+        private readonly AuthService _auth;
+        private readonly ApproverService _service;
+        public ApproverController(AuthService auth, ApproverService service)
+        {
+            _auth = auth;
+            _service = service;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            ApproverService service = new();
-            List<Approver> approvers = service.GetAllApprovers();
+            List<Approver> approvers = _service.GetAllApprovers();
             return Ok(approvers);
         }
 
         [HttpPost]
         public IActionResult Create(Approver approver)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            ApproverService service = new();
-            service.CreateNewApprover(approver);
+            _service.CreateNewApprover(approver);
 
             return Ok();
         }
@@ -38,13 +42,11 @@ namespace Ishurim.Controllers
         [HttpPut]
         public IActionResult Edit(Approver approver)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            ApproverService service = new();
-            service.EditApprover(approver);
+            _service.EditApprover(approver);
 
             return Ok();
         }
@@ -52,13 +54,11 @@ namespace Ishurim.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            ApproverService service = new();
-            service.DeleteApprover(id);
+            _service.DeleteApprover(id);
 
             return Ok();
         }

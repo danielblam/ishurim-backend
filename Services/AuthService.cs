@@ -5,10 +5,10 @@ using System.Diagnostics;
 
 namespace Ishurim.Services
 {
-    public class AuthService
+    public class AuthService(IConfiguration config)
     {
-        private static readonly string connectionString = new DbService().connectionString;
-        private static readonly string salt = new DbService().salt;
+        private readonly string connectionString = config.GetConnectionString("DefaultConnection");
+        private static readonly string salt = String.Empty; //new DbService().salt;
         public enum Roles
         {
             USER = 0,

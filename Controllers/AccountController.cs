@@ -8,16 +8,23 @@ namespace Ishurim.Controllers
     [ApiController]
     public class AccountController : Controller
     {
+        private readonly AuthService _auth;
+        private readonly AccountService _service;
+        public AccountController(AuthService auth, AccountService service)
+        {
+            _auth = auth;
+            _service = service;
+        }
+
+
         [HttpGet]
         public IActionResult GetUsers()
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            AccountService service = new();
-            List<User> users = service.GetAllUsers();
+            List<User> users = _service.GetAllUsers();
 
             return Ok(users);
         }
@@ -25,13 +32,11 @@ namespace Ishurim.Controllers
         [HttpPost]
         public IActionResult CreateUser(User user)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            AccountService service = new();
-            var result = service.CreateAccount(user);
+            var result = _service.CreateAccount(user);
             if (result == -1) return BadRequest("This user already exists.");
 
             return Ok();
@@ -40,14 +45,12 @@ namespace Ishurim.Controllers
         [HttpDelete("{username}")]
         public IActionResult DeleteUser(string username)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
-            if (username == auth.GetUserFromToken(token)) return Forbid("Can't delete your own account.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (username == _auth.GetUserFromToken(token)) return Forbid("Can't delete your own account.");
 
-            AccountService service = new();
-            var result = service.DeleteAccount(username);
+            var result = _service.DeleteAccount(username);
 
             return NoContent();
         }

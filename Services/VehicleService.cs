@@ -5,9 +5,9 @@ using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
 {
-    public class VehicleService
+    public class VehicleService(IConfiguration config)
     {
-        private static readonly string connectionString = new DbService().connectionString;
+        private readonly string connectionString = config.GetConnectionString("DefaultConnection");
         private static readonly string tableName = "CleyTahbura";
 
         public List<Vehicle> GetAllVehicles()

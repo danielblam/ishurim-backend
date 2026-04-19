@@ -13,7 +13,14 @@ namespace Ishurim.Services
 {
     public class AccountService
     {
-        private static readonly string connectionString = new DbService().connectionString;
+        private readonly string connectionString;
+        private readonly AuthService _auth;
+
+        public AccountService(IConfiguration config, AuthService auth)
+        {
+            connectionString = config.GetConnectionString("DefaultConnection");
+            _auth = auth;
+        }
         public List<User> GetAllUsers()
         {
             List<User> users = [];
@@ -67,7 +74,6 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-
             SqlCommand check = new($"SELECT * FROM Users WHERE [User] = @user", sqlCon);
             check.Parameters.AddWithValue("@user", user.Username);
 
@@ -76,8 +82,7 @@ namespace Ishurim.Services
                 if (reader.HasRows) return -1;
             }
 
-            AuthService auth = new();
-            string hashedpassword = auth.HashPassword(user.Password);
+            string hashedpassword = _auth.HashPassword(user.Password);
             //string hashedpassword = user.Password; // this is (hopefully) temporary
 
             SqlCommand command = new(

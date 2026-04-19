@@ -6,9 +6,9 @@ using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
 {
-    public class ApprovalService
+    public class ApprovalService(IConfiguration config)
     {
-        private static readonly string connectionString = new DbService().connectionString;
+        private readonly string connectionString = config.GetConnectionString("DefaultConnection");
         private static readonly string tableName = "Ishurim";
 
         public List<Approval> GetAllApprovals()

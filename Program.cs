@@ -1,3 +1,4 @@
+using Ishurim.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,17 @@ builder.Services.AddCors(options =>
         builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
+
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<ApprovalService>();
+builder.Services.AddScoped<ApproverService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<HospitalService>();
+builder.Services.AddScoped<InstituteService>();
+builder.Services.AddScoped<PdfService>();
+builder.Services.AddScoped<TestService>();
+builder.Services.AddScoped<VehicleService>();
 
 var app = builder.Build();
 

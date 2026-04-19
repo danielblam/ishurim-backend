@@ -9,29 +9,36 @@ namespace Ishurim.Controllers
     [ApiController]
     public class ApprovalController : Controller
     {
+        private readonly AuthService _auth;
+        private readonly ApprovalService _service;
+        private readonly PdfService _pdfService;
+        public ApprovalController(AuthService auth, ApprovalService service, PdfService pdfService)
+        {
+            _auth = auth;
+            _service = service;
+            _pdfService = pdfService;
+        }
+
+
         [HttpGet]
         public IActionResult Get()
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            ApprovalService service = new();
-            List<Approval> approvals = service.GetAllApprovals();
+            List<Approval> approvals = _service.GetAllApprovals();
             return Ok(approvals);
         }
 
         [HttpPost]
         public IActionResult Create(Approval approval)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            ApprovalService service = new();
-            service.CreateNewApproval(approval);
+            _service.CreateNewApproval(approval);
 
             return Ok();
         }
@@ -39,13 +46,11 @@ namespace Ishurim.Controllers
         [HttpPut]
         public IActionResult Edit(Approval approval)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            ApprovalService service = new();
-            service.EditApproval(approval);
+            _service.EditApproval(approval);
 
             return Ok();
         }
@@ -53,13 +58,11 @@ namespace Ishurim.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            ApprovalService service = new();
-            service.DeleteApproval(id);
+            _service.DeleteApproval(id);
 
             return Ok();
         }
@@ -67,16 +70,13 @@ namespace Ishurim.Controllers
         [HttpGet("pdf/{id}")]
         public IActionResult GetPdf(int id)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            ApprovalService service = new();
-            Approval approval = service.GetAllApprovals().Find(x => x.ApprovalId == id);
+            Approval approval = _service.GetAllApprovals().Find(x => x.ApprovalId == id);
 
-            PdfService pdfService = new();
-            var pdfBytes = pdfService.GenerateApproval(approval);
+            var pdfBytes = _pdfService.GenerateApproval(approval);
 
             return File(pdfBytes, "application/pdf", "approval.pdf");
         }
