@@ -9,29 +9,33 @@ namespace Ishurim.Controllers
     [ApiController]
     public class HospitalController : Controller
     {
+        private readonly AuthService _auth;
+        private readonly HospitalService _service;
+        public HospitalController(AuthService auth, HospitalService service)
+        {
+            _auth = auth;
+            _service = service;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            HospitalService service = new();
-            List<Hospital> hospitals = service.GetAllHospitals();
+            List<Hospital> hospitals = _service.GetAllHospitals();
             return Ok(hospitals);
         }
 
         [HttpPost]
         public IActionResult Create(Hospital hospital)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            HospitalService service = new();
-            service.CreateNewHospital(hospital);
+            _service.CreateNewHospital(hospital);
 
             return Ok();
         }
@@ -39,13 +43,11 @@ namespace Ishurim.Controllers
         [HttpPut]
         public IActionResult Edit(Hospital hospital)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            HospitalService service = new();
-            service.EditHospital(hospital);
+            _service.EditHospital(hospital);
 
             return Ok();
         }
@@ -53,13 +55,11 @@ namespace Ishurim.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            HospitalService service = new();
-            service.DeleteHospital(id);
+            _service.DeleteHospital(id);
 
             return Ok();
         }

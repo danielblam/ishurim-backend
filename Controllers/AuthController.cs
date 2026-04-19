@@ -8,14 +8,20 @@ namespace Ishurim.Controllers
     [ApiController]
     public class AuthController : Controller
     {
+        private readonly AuthService _service;
+        public AuthController(AuthService service)
+        {
+            _service = service;
+        }
+
+
         [HttpGet("ping")]
         public IActionResult Ping()
         {
-            AuthService service = new();
-            var token = service.GetToken(Request);
+            var token = _service.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect");
 
-            if (service.Authorize(token, AuthService.Roles.USER)) return Ok();
+            if (_service.Authorize(token, AuthService.Roles.USER)) return Ok();
             else
             {
                 return Unauthorized();
@@ -25,8 +31,7 @@ namespace Ishurim.Controllers
         [HttpPost("login")]
         public IActionResult Login(LoginDetails details)
         {
-            AuthService service = new();
-            var result = service.LogIn(details);
+            var result = _service.LogIn(details);
             switch (result)
             {
                 case -1000: return Unauthorized("Incorrect password.");
@@ -34,7 +39,7 @@ namespace Ishurim.Controllers
             }
             var token = (new Utilities()).GenerateToken();
 
-            service.SaveToken(details.Username, token);
+            _service.SaveToken(details.Username, token);
 
             LoginResponse response = new()
             {

@@ -5,9 +5,9 @@ using static Ishurim.Services.AuthService;
 
 namespace Ishurim.Services
 {
-    public class TestService
+    public class TestService(IConfiguration config)
     {
-        private static readonly string connectionString = new DbService().connectionString;
+        private readonly string connectionString = config.GetConnectionString("DefaultConnection");
         private static readonly string tableName = "SugeyBdikot";
 
         public List<Test> GetAllTests()

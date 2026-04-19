@@ -10,6 +10,26 @@ namespace Ishurim.Services
 {
     public class PdfService
     {
+        private readonly ApproverService _approverService;
+        private readonly HospitalService _hospitalService;
+        private readonly TestService _testService;
+        private readonly InstituteService _instituteService;
+        private readonly VehicleService _vehicleService;
+        private readonly AccountService _accountService;
+        private readonly DepartmentService _departmentService;
+
+        public PdfService(ApproverService approverService, HospitalService hospitalService, TestService testService, 
+            InstituteService instituteService, VehicleService vehicleService, AccountService accountService, DepartmentService departmentService)
+        {
+            _approverService = approverService;
+            _hospitalService = hospitalService;
+            _testService = testService;
+            _instituteService = instituteService;
+            _vehicleService = vehicleService;
+            _accountService = accountService;
+            _departmentService = departmentService;
+        }
+
         public byte[] GenerateApproval(Approval approval)
         {
             QuestPDF.Settings.License = LicenseType.Community;
@@ -36,22 +56,15 @@ namespace Ishurim.Services
                 }
             }
 
-            ApproverService approverService = new();
-            HospitalService hospitalService = new();
-            TestService testService = new();
-            InstituteService instituteService = new();
-            VehicleService vehicleService = new();
-            AccountService accountService = new();
-            DepartmentService departmentService = new();
 
-            string approverFullName = approverService.GetApproverById(approval.ApproverId).FullName;
-            Institute institute = instituteService.GetInstituteById(approval.InstituteId);
+            string approverFullName = _approverService.GetApproverById(approval.ApproverId).FullName;
+            Institute institute = _instituteService.GetInstituteById(approval.InstituteId);
             string instituteName = institute.Name;
-            string hospitalName = institute.HospitalId == null ? "-" : hospitalService.GetHospitalById((int)institute.HospitalId).Name;
-            string testName = testService.GetTestById(approval.TestId).Name;
-            string vehicleName = approval.VehicleId == null ? "-" : vehicleService.GetVehicleById((int)approval.VehicleId).Name;
+            string hospitalName = institute.HospitalId == null ? "-" : _hospitalService.GetHospitalById((int)institute.HospitalId).Name;
+            string testName = _testService.GetTestById(approval.TestId).Name;
+            string vehicleName = approval.VehicleId == null ? "-" : _vehicleService.GetVehicleById((int)approval.VehicleId).Name;
             string clerkName = approval.Clerk ?? "-";
-            string departmentName = approval.DepartmentId == null ? "-" : departmentService.GetDepartmentById((int)approval.DepartmentId).Name;
+            string departmentName = approval.DepartmentId == null ? "-" : _departmentService.GetDepartmentById((int)approval.DepartmentId).Name;
 
             var doc = Document
                 .Create(document =>

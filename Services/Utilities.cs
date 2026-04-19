@@ -5,7 +5,6 @@ namespace Ishurim.Services
 {
     public class Utilities
     {
-        private static readonly string connectionString = new DbService().connectionString;
         public string GenerateToken()
         {
             Random rng = new();

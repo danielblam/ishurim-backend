@@ -8,29 +8,33 @@ namespace Ishurim.Controllers
     [ApiController]
     public class VehicleController : Controller
     {
+        private readonly AuthService _auth;
+        private readonly VehicleService _service;
+        public VehicleController(AuthService auth, VehicleService service)
+        {
+            _auth = auth;
+            _service = service;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.USER)) return Unauthorized("Insufficient permission.");
 
-            VehicleService service = new();
-            List<Vehicle> vehicles = service.GetAllVehicles();
+            List<Vehicle> vehicles = _service.GetAllVehicles();
             return Ok(vehicles);
         }
 
         [HttpPost]
         public IActionResult Create(Vehicle vehicle)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            VehicleService service = new();
-            service.CreateNewVehicle(vehicle);
+            _service.CreateNewVehicle(vehicle);
 
             return Ok();
         }
@@ -38,13 +42,11 @@ namespace Ishurim.Controllers
         [HttpPut]
         public IActionResult Edit(Vehicle vehicle)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            VehicleService service = new();
-            service.EditVehicle(vehicle);
+            _service.EditVehicle(vehicle);
 
             return Ok();
         }
@@ -52,13 +54,11 @@ namespace Ishurim.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            AuthService auth = new();
-            var token = auth.GetToken(Request);
+            var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
-            if (!auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+            if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            VehicleService service = new();
-            service.DeleteVehicle(id);
+            _service.DeleteVehicle(id);
 
             return Ok();
         }
