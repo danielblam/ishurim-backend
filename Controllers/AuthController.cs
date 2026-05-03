@@ -26,6 +26,38 @@ namespace Ishurim.Controllers
         }
 
         [Authorize]
+        [HttpGet("debugwindowsauth")]
+        public IActionResult DebugUser()
+        {
+            var claims = User.Claims.Select(c => new {
+                c.Type,
+                c.Value
+            });
+
+            var testRoles = new[]
+                    {
+                "CARMEL\\ISHURIM",
+                "CARMEL\\IshurimUser",
+                "CARMEL\\IshurimAdmin",
+                "ISHURIM",
+                "IshurimUser",
+                "IshurimAdmin"
+            };
+
+            var roleChecks = testRoles.Select(r => new {
+                Role = r,
+                IsInRole = User.IsInRole(r)
+            });
+
+            return Ok(new
+            {
+                Name = User.Identity?.Name,
+                Claims = claims,
+                RoleChecks = roleChecks
+            });
+        }
+
+        [Authorize]
         [HttpGet("windowslogin")]
         public IActionResult WindowsLogin()
         {
