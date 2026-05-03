@@ -26,7 +26,7 @@ namespace Ishurim.Services
                     {
                         ApprovalId = reader.GetInt32(0),
                         HospitalizationId = reader.IsDBNull("MisparIshpuz") ? null : reader.GetString("MisparIshpuz"),
-                        Date = reader.IsDBNull("MisparIshpuz") ? null : DateOnly.FromDateTime(reader.GetFieldValue<DateTime>("Taarih")),
+                        Date = reader.IsDBNull("Taarih") ? null : DateOnly.FromDateTime(reader.GetFieldValue<DateTime>("Taarih")),
                         TestId = reader.GetInt32("SugBdika"),
                         TestCode = reader.IsDBNull("KodBdika") ? null : reader.GetString("KodBdika"),
                         FirstName = reader.IsDBNull("Shem") ? null : reader.GetString("Shem"),

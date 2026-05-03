@@ -4,5 +4,6 @@
     {
         public required string Token { get; set; }
         public int Role { get; set; }
+        public string Name { get; set; } = String.Empty;
     }
 }

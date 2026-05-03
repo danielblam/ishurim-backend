@@ -1,19 +1,16 @@
 ﻿using Ishurim.Models;
 using Ishurim.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ishurim.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : Controller
+    public class AuthController(AuthService service, AccountService accountservice) : Controller
     {
-        private readonly AuthService _service;
-        public AuthController(AuthService service)
-        {
-            _service = service;
-        }
-
+        private readonly AuthService _service = service;
+        private readonly AccountService _accountservice = accountservice;
 
         [HttpGet("ping")]
         public IActionResult Ping()
@@ -26,6 +23,47 @@ namespace Ishurim.Controllers
             {
                 return Unauthorized();
             }
+        }
+
+        [Authorize]
+        [HttpGet("windowslogin")]
+        public IActionResult WindowsLogin()
+        {
+            string name = User.Identity?.Name;
+            if (name == null) return BadRequest("User is null.");
+
+            int? createRole = null;
+            string domain = "CARMEL";
+            if (!User.IsInRole($"{domain}\\ISHURIM")) return Unauthorized($"אין לך גישה למערכת . ({name})");
+            if (User.IsInRole($"{domain}\\IshurimUser")) createRole = 0;
+            if (User.IsInRole($"{domain}\\IshurimAdmin")) createRole = -1;
+
+            if (createRole == null) return Unauthorized($"אין לך גישה למערכת . ({name})");
+
+            var result = _service.WindowsAuthLogIn(name);
+            if(result == -1000)
+            {
+                result = _accountservice.CreateAccount(new User()
+                {
+                    Username = name,
+                    Password = "",
+                    Role = (int)createRole
+                    //Role = 0
+                });
+            }
+
+            var token = (new Utilities()).GenerateToken();
+
+            _service.SaveToken(name, token);
+
+            LoginResponse response = new()
+            {
+                Token = token,
+                Role = result,
+                Name = name
+            };
+
+            return Ok(response);
         }
 
         [HttpPost("login")]

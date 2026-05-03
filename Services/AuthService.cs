@@ -15,6 +15,23 @@ namespace Ishurim.Services
             ADMIN = -1
         }
         // Normal login
+
+        public int WindowsAuthLogIn(string name)
+        {
+            using SqlConnection sqlCon = new(connectionString);
+            SqlCommand command = new($"SELECT * FROM Users WHERE User = @name", sqlCon);
+            command.Parameters.AddWithValue("@name", name);
+
+            sqlCon.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                int role = reader.GetInt32(2);
+                return role;
+            }
+            return -1000;
+        }
+
         public int LogIn(LoginDetails details)
         {
             using SqlConnection sqlCon = new(connectionString);
@@ -27,6 +44,7 @@ namespace Ishurim.Services
             {
                 string user = reader.GetString(0);
                 string password = reader.GetString(1);
+                if (password == "") return -1000;
                 if (HashPassword(details.Password) != password) return -1000; // Incorrect password
                 int role = reader.GetInt32(2);
                 return role;
