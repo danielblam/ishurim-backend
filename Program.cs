@@ -41,10 +41,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication("Negotiate")
+    .AddNegotiate();
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ApprovalService>();
 builder.Services.AddScoped<ApproverService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DbService>();
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<HospitalService>();
 builder.Services.AddScoped<InstituteService>();

@@ -86,13 +86,13 @@ namespace Ishurim.Services
             //string hashedpassword = user.Password; // this is (hopefully) temporary
 
             SqlCommand command = new(
-                $"INSERT INTO Users ([User], Sisma, Harshaot) VALUES (@username, @passwordHash, 0);" +
-                $"SELECT SCOPE_IDENTITY();", sqlCon);
+                $"INSERT INTO Users ([User], Sisma, Harshaot) VALUES (@username, @passwordHash, @role)", sqlCon);
             command.Parameters.AddWithValue("@username", user.Username);
             command.Parameters.AddWithValue("@passwordHash", hashedpassword);
+            command.Parameters.AddWithValue("@role", user.Role);
 
-            int newUserID = int.Parse(command.ExecuteScalar().ToString());
-            return newUserID;
+            command.ExecuteNonQuery();
+            return 0;
         }
 
         public int DeleteAccount(string username)
