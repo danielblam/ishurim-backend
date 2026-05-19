@@ -1,5 +1,6 @@
 using Ishurim.Services;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Server.IISIntegration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,16 +34,17 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-    });
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", builder =>
+//    {
+//        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+//    });
+//});
 
-builder.Services.AddAuthentication("Negotiate")
-    .AddNegotiate();
+//builder.Services.AddAuthentication("Negotiate")
+//    .AddNegotiate();
+builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
 builder.Services.AddAuthorization();
 
@@ -72,12 +74,11 @@ app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapFallbackToFile("index.html");
-
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 app.Run();
