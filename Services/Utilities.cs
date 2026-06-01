@@ -7,12 +7,11 @@ namespace Ishurim.Services
     {
         public string GenerateToken()
         {
-            Random rng = new();
             string token = "";
             string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
             for (int i = 0; i < 64; i++)
             {
-                token += characters[rng.Next(characters.Length)];
+                token += characters[RandomNumberGenerator.GetInt32(characters.Length)];
             }
             return token;
         }
