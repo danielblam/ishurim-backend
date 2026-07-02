@@ -42,9 +42,18 @@ builder.Services.AddSwaggerGen(c =>
 //    });
 //});
 
-//builder.Services.AddAuthentication("Negotiate")
-//    .AddNegotiate();
-builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
+var useNegotiate =
+    builder.Configuration.GetValue<bool>("Authorization:UseNegotiate");
+
+if (useNegotiate)
+{
+    builder.Services.AddAuthentication("Negotiate")
+        .AddNegotiate();
+}
+else
+{
+    builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
+}
 
 builder.Services.AddAuthorization();
 

@@ -7,10 +7,11 @@ namespace Ishurim.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController(AuthService service, AccountService accountservice) : Controller
+    public class AuthController(AuthService service, AccountService accountservice, IConfiguration config) : Controller
     {
         private readonly AuthService _service = service;
         private readonly AccountService _accountservice = accountservice;
+        private readonly bool _enforceRoles = config.GetValue<bool>("Authorization:EnforceRoles", false);
 
         [HttpGet("ping")]
         public IActionResult Ping()
@@ -64,13 +65,16 @@ namespace Ishurim.Controllers
             string name = User.Identity?.Name;
             if (name == null) return BadRequest("User is null.");
 
-            int? createRole = null;
+            int? createRole = _enforceRoles ? null : -1; // 
             string domain = "CARMEL";
-            if (!User.IsInRole($"{domain}\\ISHURIM")) return Unauthorized($"אין לך גישה למערכת . ({name})");
-            if (User.IsInRole($"{domain}\\IshurimUser")) createRole = 0;
-            if (User.IsInRole($"{domain}\\IshurimAdmin")) createRole = -1;
-
-            if (createRole == null) return Unauthorized($"אין לך גישה למערכת . ({name})");
+            if(_enforceRoles)
+            {
+                if (!User.IsInRole($"{domain}\\ISHURIM")) return Unauthorized($"אין לך גישה למערכת . ({name})");
+                if (User.IsInRole($"{domain}\\IshurimUser")) createRole = 0;
+                if (User.IsInRole($"{domain}\\IshurimAdmin")) createRole = -1;
+                
+                if (createRole == null) return Unauthorized($"אין לך גישה למערכת . ({name})");
+            }
 
             var result = _service.WindowsAuthLogIn(name);
             if(result == -1000)
