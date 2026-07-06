@@ -34,19 +34,24 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", builder =>
-//    {
-//        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-//    });
-//});
 
 var useNegotiate =
     builder.Configuration.GetValue<bool>("Authorization:UseNegotiate");
 
 if (useNegotiate)
 {
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("DevCors", policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    });
+
     builder.Services.AddAuthentication("Negotiate")
         .AddNegotiate();
 }
@@ -83,8 +88,9 @@ app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-//app.UseCors("AllowAll");
+app.UseCors("DevCors");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
