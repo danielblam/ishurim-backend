@@ -19,7 +19,7 @@ namespace Ishurim.Services
         public int WindowsAuthLogIn(string name)
         {
             using SqlConnection sqlCon = new(connectionString);
-            SqlCommand command = new($"SELECT * FROM Users WHERE User = @name", sqlCon);
+            SqlCommand command = new($"SELECT * FROM Users WHERE [User] = @name", sqlCon);
             command.Parameters.AddWithValue("@name", name);
 
             sqlCon.Open();
