@@ -59,7 +59,9 @@ namespace Ishurim.Controllers
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
             if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            _service.DeleteHospital(id);
+            var result = _service.DeleteHospital(id);
+
+            if (result == -1) return Forbid("This hospital is used by 1 or more institutes.");
 
             return Ok();
         }

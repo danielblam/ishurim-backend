@@ -73,6 +73,7 @@ builder.Services.AddScoped<InstituteService>();
 builder.Services.AddScoped<PdfService>();
 builder.Services.AddScoped<TestService>();
 builder.Services.AddScoped<VehicleService>();
+builder.Services.AddScoped<XlsxService>();
 
 var app = builder.Build();
 

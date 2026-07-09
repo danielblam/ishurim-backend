@@ -80,7 +80,7 @@ namespace Ishurim.Services
             command.ExecuteNonQuery();
         }
 
-        public void DeleteHospital(int hospitalId)
+        public int DeleteHospital(int hospitalId)
         {
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
@@ -88,7 +88,15 @@ namespace Ishurim.Services
             SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @hospitalId" , sqlCon);
             command.Parameters.AddWithValue("@hospitalId", hospitalId);
 
-            command.ExecuteNonQuery();
+            try
+            {
+                command.ExecuteNonQuery();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }
