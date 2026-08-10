@@ -31,7 +31,7 @@ namespace Ishurim.Services
                 case "all":
                     break;
                 case "monthRange":
-                    approvals = (List<Approval>)approvals.Where(approval =>
+                    approvals = approvals.Where(approval =>
                     {
                         if (approval.Date == null) return false;
 
@@ -41,10 +41,10 @@ namespace Ishurim.Services
                         var endDate = new DateOnly(exportSettings.EndYear, exportSettings.EndMonth, lastDay);
 
                         return date >= startDate && date <= endDate;
-                    });
+                    }).ToList();
                     break;
                 case "quarter":
-                    approvals = (List<Approval>)approvals.Where(approval =>
+                    approvals = approvals.Where(approval =>
                     {
                         if (approval.Date == null) return false;
 
@@ -54,7 +54,7 @@ namespace Ishurim.Services
                         var endDate = new DateOnly(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3 + 2, lastDay);
 
                         return date >= startDate && date <= endDate;
-                    });
+                    }).ToList();
                     break;
             }
 
