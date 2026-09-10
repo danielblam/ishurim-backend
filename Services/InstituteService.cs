@@ -26,7 +26,8 @@ namespace Ishurim.Services
                     {
                         InstituteId = reader.GetInt32(0),
                         Name = reader.GetString(1),
-                        HospitalId = reader.IsDBNull(2) ? null : reader.GetInt32(2)
+                        HospitalId = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                        Active = reader.GetBoolean(3)
                     };
                     institutes.Add(institute);
                 }
@@ -49,7 +50,8 @@ namespace Ishurim.Services
                     {
                         InstituteId = reader.GetInt32(0),
                         Name = reader.GetString(1),
-                        HospitalId = reader.IsDBNull(2) ? null : reader.GetInt32(2)
+                        HospitalId = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                        Active = reader.GetBoolean(3)
                     };
                     return institute;
                 }
@@ -63,7 +65,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (Mahon, Hospital) VALUES (@name, @hospitalId);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Mahon, Hospital, Active) VALUES (@name, @hospitalId, 1);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", institute.Name);
             command.Parameters.AddWithValue("@hospitalId", (object?)institute.HospitalId ?? DBNull.Value);
@@ -91,10 +93,30 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @InstituteId" , sqlCon);
-            command.Parameters.AddWithValue("@InstituteId", instituteId);
+            SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @instituteId" , sqlCon);
+            command.Parameters.AddWithValue("@instituteId", instituteId);
 
             command.ExecuteNonQuery();
+        }
+
+        public int SetActive(int instituteId, bool setActive)
+        {
+            using SqlConnection sqlCon = new(connectionString);
+            sqlCon.Open();
+
+            SqlCommand command = new($"UPDATE {tableName} SET Active = @active WHERE Mone = @instituteId", sqlCon);
+            command.Parameters.AddWithValue("@active", setActive);
+            command.Parameters.AddWithValue("@instituteId", instituteId);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }

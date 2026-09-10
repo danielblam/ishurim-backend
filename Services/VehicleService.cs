@@ -24,7 +24,8 @@ namespace Ishurim.Services
                     Vehicle vehicle = new()
                     {
                         VehicleId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     vehicles.Add(vehicle);
                 }
@@ -46,7 +47,8 @@ namespace Ishurim.Services
                     Vehicle vehicle = new()
                     {
                         VehicleId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     return vehicle;
                 }
@@ -59,7 +61,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (CliTahbura) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (CliTahbura, Active) VALUES (@name, 1);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", vehicle.Name);
 
@@ -89,6 +91,26 @@ namespace Ishurim.Services
             command.Parameters.AddWithValue("@vehicleId", vehicleId);
 
             command.ExecuteNonQuery();
+        }
+
+        public int SetActive(int vehicleId, bool setActive)
+        {
+            using SqlConnection sqlCon = new(connectionString);
+            sqlCon.Open();
+
+            SqlCommand command = new($"UPDATE {tableName} SET Active = @active WHERE Mone = @vehicleId", sqlCon);
+            command.Parameters.AddWithValue("@active", setActive);
+            command.Parameters.AddWithValue("@vehicleId", vehicleId);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }

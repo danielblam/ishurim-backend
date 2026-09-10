@@ -54,11 +54,31 @@ namespace Ishurim.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            return StatusCode(StatusCodes.Status410Gone);
+
+            //var token = _auth.GetToken(Request);
+            //if (token == null) return BadRequest("Authorization header is missing or incorrect.");
+            //if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
+
+            //_service.DeleteTest(id);
+
+            //return Ok();
+        }
+
+        [HttpGet("active/{id}")]
+        public IActionResult Toggle(int id, bool? active) // will be used to toggle an objects activity
+        {
+            System.Diagnostics.Debug.WriteLine(id);
+            System.Diagnostics.Debug.WriteLine(active);
+
+            if (active == null) return BadRequest("Incomplete request.");
+
             var token = _auth.GetToken(Request);
             if (token == null) return BadRequest("Authorization header is missing or incorrect.");
             if (!_auth.Authorize(token, AuthService.Roles.ADMIN)) return Unauthorized("Insufficient permission.");
 
-            _service.DeleteTest(id);
+            var result = _service.SetActive(id, (bool)active);
+            if (result == -1) return BadRequest("Something went wrong.");
 
             return Ok();
         }

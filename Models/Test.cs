@@ -4,5 +4,6 @@
     {
         public int TestId { get; set; }
         public required string Name { get; set; }
+        public bool Active { get; set; }
     }
 }

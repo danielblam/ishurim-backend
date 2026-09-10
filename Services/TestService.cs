@@ -24,7 +24,8 @@ namespace Ishurim.Services
                     Test test = new()
                     {
                         TestId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     tests.Add(test);
                 }
@@ -46,7 +47,8 @@ namespace Ishurim.Services
                     Test test = new()
                     {
                         TestId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     return test;
                 }
@@ -59,7 +61,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (SugBdika) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (SugBdika, Active) VALUES (@name, 1);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", test.Name);
 
@@ -89,6 +91,26 @@ namespace Ishurim.Services
             command.Parameters.AddWithValue("@testId", testId);
 
             command.ExecuteNonQuery();
+        }
+
+        public int SetActive(int testId, bool setActive)
+        {
+            using SqlConnection sqlCon = new(connectionString);
+            sqlCon.Open();
+
+            SqlCommand command = new($"UPDATE {tableName} SET Active = @active WHERE Mone = @testId", sqlCon);
+            command.Parameters.AddWithValue("@active", setActive);
+            command.Parameters.AddWithValue("@testId", testId);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Ishurim.Models;
 using Ishurim.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.DirectoryServices.AccountManagement;
 
 namespace Ishurim.Controllers
 {
@@ -63,7 +66,28 @@ namespace Ishurim.Controllers
         public IActionResult WindowsLogin()
         {
             string name = User.Identity?.Name;
+            string displayName = null;
             if (name == null) return BadRequest("User is null.");
+
+            try
+            {
+                var username = name.Split('\\').Last();
+
+                using var context = new PrincipalContext(ContextType.Domain);
+
+                var user = UserPrincipal.FindByIdentity(
+                    context,
+                    IdentityType.SamAccountName,
+                    username
+                );
+
+                displayName = user?.DisplayName;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            if (displayName != null) name = displayName;
 
             int? createRole = _enforceRoles ? null : -1; // 
             string domain = "CARMEL";

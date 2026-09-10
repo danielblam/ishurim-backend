@@ -36,9 +36,9 @@ namespace Ishurim.Services
                         if (approval.Date == null) return false;
 
                         var date = (DateOnly)approval.Date;
-                        var startDate = new DateOnly(exportSettings.StartYear, exportSettings.StartMonth, 1);
-                        int lastDay = DateTime.DaysInMonth(exportSettings.EndYear, exportSettings.EndMonth);
-                        var endDate = new DateOnly(exportSettings.EndYear, exportSettings.EndMonth, lastDay);
+                        var startDate = new DateOnly(exportSettings.StartYear, exportSettings.StartMonth + 1, 1);
+                        int lastDay = DateTime.DaysInMonth(exportSettings.EndYear, exportSettings.EndMonth + 1);
+                        var endDate = new DateOnly(exportSettings.EndYear, exportSettings.EndMonth + 1, lastDay);
 
                         return date >= startDate && date <= endDate;
                     }).ToList();
@@ -49,9 +49,9 @@ namespace Ishurim.Services
                         if (approval.Date == null) return false;
 
                         var date = (DateOnly)approval.Date;
-                        var startDate = new DateOnly(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3, 1);
-                        int lastDay = DateTime.DaysInMonth(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3 + 2);
-                        var endDate = new DateOnly(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3 + 2, lastDay);
+                        var startDate = new DateOnly(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3 + 1, 1);
+                        int lastDay = DateTime.DaysInMonth(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3 + 2 + 1);
+                        var endDate = new DateOnly(exportSettings.QuarterYear, exportSettings.QuarterNumber * 3 + 2 + 1, lastDay);
 
                         return date >= startDate && date <= endDate;
                     }).ToList();

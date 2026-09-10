@@ -24,7 +24,8 @@ namespace Ishurim.Services
                     Hospital hospital = new()
                     {
                         HospitalId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     hospitals.Add(hospital);
                 }
@@ -46,7 +47,8 @@ namespace Ishurim.Services
                     Hospital hospital = new()
                     {
                         HospitalId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     return hospital;
                 }
@@ -59,7 +61,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (Hospital) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Hospital, Active) VALUES (@name, 1);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", hospital.Name);
 
@@ -86,6 +88,26 @@ namespace Ishurim.Services
             sqlCon.Open();
 
             SqlCommand command = new($"DELETE FROM {tableName} WHERE Mone = @hospitalId" , sqlCon);
+            command.Parameters.AddWithValue("@hospitalId", hospitalId);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        public int SetActive(int hospitalId, bool setActive)
+        {
+            using SqlConnection sqlCon = new(connectionString);
+            sqlCon.Open();
+
+            SqlCommand command = new($"UPDATE {tableName} SET Active = @active WHERE Mone = @hospitalId", sqlCon);
+            command.Parameters.AddWithValue("@active", setActive);
             command.Parameters.AddWithValue("@hospitalId", hospitalId);
 
             try

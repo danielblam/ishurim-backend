@@ -24,7 +24,8 @@ namespace Ishurim.Services
                     Department department = new()
                     {
                         DepartmentId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     departments.Add(department);
                 }
@@ -46,7 +47,8 @@ namespace Ishurim.Services
                     Department department = new()
                     {
                         DepartmentId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
+                        Active = reader.GetBoolean(2)
                     };
                     return department;
                 }
@@ -59,7 +61,7 @@ namespace Ishurim.Services
             using SqlConnection sqlCon = new(connectionString);
             sqlCon.Open();
 
-            SqlCommand command = new($"INSERT INTO {tableName} (Mahlaka) VALUES (@name);" +
+            SqlCommand command = new($"INSERT INTO {tableName} (Mahlaka, Active) VALUES (@name, 1);" +
                 $"SELECT SCOPE_IDENTITY();", sqlCon);
             command.Parameters.AddWithValue("@name", department.Name);
 
@@ -89,6 +91,26 @@ namespace Ishurim.Services
             command.Parameters.AddWithValue("@departmentId", departmentId);
 
             command.ExecuteNonQuery();
+        }
+
+        public int SetActive(int departmentId, bool setActive)
+        {
+            using SqlConnection sqlCon = new(connectionString);
+            sqlCon.Open();
+
+            SqlCommand command = new($"UPDATE {tableName} SET Active = @active WHERE Mone = @departmentId", sqlCon);
+            command.Parameters.AddWithValue("@active", setActive);
+            command.Parameters.AddWithValue("@departmentId", departmentId);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }
